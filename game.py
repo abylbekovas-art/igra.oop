@@ -7,7 +7,7 @@ WIDTH = 800
 HEIGHT = 600
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("PIXEL HERO")
+pygame.display.set_caption("Space Shooter")
 
 clock = pygame.time.Clock()
 
@@ -15,11 +15,13 @@ WHITE = (255, 255, 255)
 BLACK = (20, 20, 30)
 RED = (230, 60, 60)
 YELLOW = (255, 220, 50)
-
+ 
 font = pygame.font.SysFont("Arial", 30)
 
 player = pygame.image.load("images/pygame.png.jpeg").convert()
+
 player.set_colorkey((255, 255, 255))
+
 player = pygame.transform.scale(player, (70, 80))
 
 player_rect = player.get_rect(center=(400, 500))
@@ -34,12 +36,28 @@ bullet_speed = 9
 enemies = []
 enemy_speed = 3
 
+shoot_sound = None
+
+try:
+    shoot_sound = pygame.mixer.Sound("sounds/shoot.mp3")
+except pygame.error:
+    pass
+
+try:
+    pygame.mixer.music.load("sounds/background.mp3")
+    pygame.mixer.music.set_volume(0.4)
+    pygame.mixer.music.play(-1)
+except pygame.error:
+    pass
+
+
 def create_enemy():
     x = random.randint(0, WIDTH - 40)
     y = -40
 
     rect = pygame.Rect(x, y, 40, 40)
     enemies.append(rect)
+
 
 for i in range(4):
     create_enemy()
@@ -63,6 +81,9 @@ while running:
                     15
                 )
                 bullets.append(bullet)
+
+                if shoot_sound:
+                    shoot_sound.play()
 
     if not game_over:
         keys = pygame.key.get_pressed()
@@ -111,6 +132,7 @@ while running:
 
                 if lives <= 0:
                     game_over = True
+                    pygame.mixer.music.stop()
 
     screen.fill((25, 30, 55))
 
